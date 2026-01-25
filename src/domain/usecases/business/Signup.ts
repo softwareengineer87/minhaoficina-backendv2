@@ -1,7 +1,8 @@
 import type { BusinessRepository } from "../../../infra/repository/BusinessRepository";
 import { Business } from "../../entities/business/Business";
+import type { UseCase } from "../UseCase";
 
-class Signup {
+class Signup implements UseCase<Input, Output> {
 
   constructor(readonly businessRepository: BusinessRepository) { }
 
@@ -15,7 +16,7 @@ class Signup {
       input.email,
       input.password,
     );
-    const hashPass = await business.password.emcryptPassword(input.password);
+    const hashPass = await business.getPassword().emcryptPassword(input.password);
     await this.businessRepository.save(
       business.businessId,
       business.name,

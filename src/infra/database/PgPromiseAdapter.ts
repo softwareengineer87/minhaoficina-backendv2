@@ -1,12 +1,12 @@
 import pgp from 'pg-promise';
 import { join } from 'node:path';
 
-export interface DadabaseConnection {
+export interface DatabaseConnection {
   query(statement: string, params: any): Promise<any>;
   close(): Promise<void>;
 }
 
-class PgPromiseAdapter implements DadabaseConnection {
+class PgPromiseAdapter implements DatabaseConnection {
 
   protected connection: any
 

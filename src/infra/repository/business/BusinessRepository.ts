@@ -1,5 +1,5 @@
-import { Business } from "../../domain/entities/business/Business";
-import type { DadabaseConnection } from "../database/PgPromiseAdapter";
+import { Business } from "../../../domain/entities/business/Business";
+import type { DatabaseConnection } from "../../database/PgPromiseAdapter";
 
 export interface BusinessRepository {
   save(
@@ -13,7 +13,7 @@ export interface BusinessRepository {
 
 class BusinessRepositoryDatabase implements BusinessRepository {
 
-  constructor(readonly connection: DadabaseConnection) { }
+  constructor(readonly connection: DatabaseConnection) { }
 
   async save(
     businessId: string,

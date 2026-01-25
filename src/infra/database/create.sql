@@ -1,3 +1,4 @@
+
 CREATE TABLE IF NOT EXISTS business (
   business_id TEXT PRIMARY KEY,
   name TEXT,
@@ -6,8 +7,8 @@ CREATE TABLE IF NOT EXISTS business (
   logo TEXT
 );
 
-CREATE TABLE IF NOT EXISTS launchs (
-  launch_id TEXT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS notes (
+  note_id TEXT PRIMARY KEY,
   business_id TEXT,
   name TEXT,
   tel TEXT,
@@ -23,11 +24,11 @@ CREATE TABLE IF NOT EXISTS launchs (
 
 CREATE TABLE IF NOT EXISTS parts (
   part_id TEXT PRIMARY KEY,
-  launch_id TEXT,
+  note_id TEXT,
   name TEXT,
   price NUMERIC,
   
-  CONSTRAINT fk_launchs FOREIGN KEY(launch_id) REFERENCES launchs(launch_id)  
+  CONSTRAINT fk_notes FOREIGN KEY(note_id) REFERENCES notes(note_id)  
 );
 
 CREATE TABLE IF NOT EXISTS stocks (
@@ -43,10 +44,10 @@ CREATE TABLE IF NOT EXISTS stocks (
 
 CREATE TABLE IF NOT EXISTS photos (
   photo_id TEXT PRIMARY KEY,
-  launch_id TEXT,
+  note_id TEXT,
   url TEXT,
   
-  CONSTRAINT fk_launchs FOREIGN KEY(launch_id) REFERENCES launchs(launch_id)  
+  CONSTRAINT fk_notes FOREIGN KEY(note_id) REFERENCES notes(note_id)  
 );
 
 CREATE TABLE IF NOT EXISTS logos (

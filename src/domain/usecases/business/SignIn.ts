@@ -1,16 +1,17 @@
-import { LaunchRepository } from "../../../../infra/repository/LaunchRepository";
+import type { BusinessRepository } from "../../../infra/repository/BusinessRepository";
 
-class Login {
+class SignIn {
 
-  constructor(readonly launchRepository: LaunchRepository) { }
+  constructor(readonly businessRepository: BusinessRepository) { }
 
   async execute(email: string, password: string): Promise<any> {
-    const business = await this.launchRepository.getByEmail(email);
+    const business = await this.businessRepository.getByEmail(email);
     if (!business) {
       throw new Error('Empresa não encontrada, verifique as informações.');
     }
 
-    const mathPassword = await business.password.decryptPassword(password, business.getPassword());
+    const mathPassword =
+      await business.getPassword().decryptPassword(password, business.getPassword().getValue());
     if (!mathPassword) {
       throw new Error('Email ou senha inválidos, tente novamente.');
     }
@@ -27,5 +28,5 @@ class Login {
 
 }
 
-export { Login }
+export { SignIn }
 

@@ -1,11 +1,11 @@
-import jwt from '@elysiajs/jwt';
 import { Email } from '../../Email';
 import { Password } from '../../Password';
+import { sign, verify } from 'jsonwebtoken';
 
 class Business {
 
   private email: Email;
-  password: Password;
+  private password: Password;
 
   constructor(
     readonly businessId: string,
@@ -40,13 +40,13 @@ class Business {
     );
   }
 
-  async generateToken() {
+  generateToken() {
     const payload = {
       businessId: this.businessId,
       name: this.name,
       email: this.email.getValue(),
     }
-    const token = await jwt.sign(payload, 'webdesign', { algorithm: 'HS256' });
+    const token = sign(payload, 'webdesign', { algorithm: 'HS256' });
     return token;
   }
 
@@ -59,7 +59,7 @@ class Business {
   }
 
   getPassword() {
-    return this.password.getValue();
+    return this.password;
   }
 
 }

@@ -1,28 +1,33 @@
 
 import { Elysia } from 'elysia';
+import cors from '@elysiajs/cors';
 // import createSql from '../database/create.sql';
 import { PgPromiseAdapter } from './database/PgPromiseAdapter';
-import jwt from '@elysiajs/jwt';
 import { BusinessController } from '../adapters/business/BusinessController';
+import { BusinessRepositoryDatabase } from './repository/business/BusinessRepository';
+import { NoteController } from '../adapters/note/NoteController';
+import { NoteRepositoryDatabase } from './repository/note/NoteRepository';
 
 const app = new Elysia();
-app.use(
-  jwt({
-    name: 'token-business',
-    secret: 'webdesign'
-  })
-)
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 const connection = new PgPromiseAdapter();
 connection.executeScript('./database/create.sql');
 //connection.query(createSql, []).catch(console.error);
-
-//app.post('/business', async ({ body }) => {
-
-//});
-const businessController = new BusinessController(app, connection);
+const businessRepository = new BusinessRepositoryDatabase(connection);
+const noteRepository = new NoteRepositoryDatabase(connection);
+const businessController = new BusinessController(app, businessRepository);
+const noteController = new NoteController(app, noteRepository);
 businessController.save();
+businessController.signIn();
+noteController.save();
 
-app.listen(3333, () => {
+const PORT = Number(process.env.PORT);
+app.listen(PORT, () => {
   console.log(`Server running at ${app.server?.url}`)
 });
 

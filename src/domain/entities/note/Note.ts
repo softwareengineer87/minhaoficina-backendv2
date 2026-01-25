@@ -1,9 +1,8 @@
 import { Part } from "./Part";
-import { v4 as uuidv4 } from 'uuid';
 
-class Launch {
+class Note {
 
-  launchId: string;
+  noteId: string;
   businessId: string;
   name: string;
   date: string;
@@ -16,7 +15,7 @@ class Launch {
   parts: Part[];
 
   constructor(
-    launchId: string,
+    noteId: string,
     businessId: string,
     name: string,
     date: string,
@@ -39,7 +38,13 @@ class Launch {
     if (model === '' || model === undefined || model === null) {
       throw new Error('O modelo é origatório.');
     }
-    this.launchId = launchId;
+    if (kilometer <= 0 || kilometer === undefined || kilometer === null) {
+      throw new Error('A kilometragem é origatória.');
+    }
+    if (plate === '' || plate === undefined || plate === null) {
+      throw new Error('A placa é origatória.');
+    }
+    this.noteId = noteId;
     this.businessId = businessId;
     this.name = name;
     this.date = date;
@@ -63,9 +68,9 @@ class Launch {
     plate: string,
     observation: string,
   ) {
-    const launchId = uuidv4();
-    return new Launch(
-      launchId,
+    const noteId = crypto.randomUUID();
+    return new Note(
+      noteId,
       businessId,
       name,
       date,
@@ -84,5 +89,5 @@ class Launch {
 
 }
 
-export { Launch }
+export { Note }
 
