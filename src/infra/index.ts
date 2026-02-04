@@ -7,6 +7,7 @@ import { BusinessController } from '../adapters/business/BusinessController';
 import { BusinessRepositoryDatabase } from './repository/business/BusinessRepository';
 import { NoteController } from '../adapters/note/NoteController';
 import { NoteRepositoryDatabase } from './repository/note/NoteRepository';
+import { CustomerRepositoryDatabase } from './repository/customer/CustomerRepository';
 
 const app = new Elysia();
 app.use(cors({
@@ -20,8 +21,9 @@ connection.executeScript('./database/create.sql');
 //connection.query(createSql, []).catch(console.error);
 const businessRepository = new BusinessRepositoryDatabase(connection);
 const noteRepository = new NoteRepositoryDatabase(connection);
+const customerRepository = new CustomerRepositoryDatabase(connection);
 const businessController = new BusinessController(app, businessRepository);
-const noteController = new NoteController(app, noteRepository);
+const noteController = new NoteController(app, noteRepository, customerRepository);
 businessController.save();
 businessController.signIn();
 noteController.save();

@@ -1,36 +1,38 @@
-import { v4 as uuidv4 } from 'uuid';
-import { Password } from '../Password';
 import { sign, verify } from 'jsonwebtoken';
-import { Email } from '../Email';
+import { Email } from '../../Email';
 
 class Customer {
 
   private email: Email;
-  password: Password;
+  private name: string;
+  private cpf: string;
+  private phone: string;
 
   constructor(
     readonly customerId: string,
-    readonly name: string,
     email: string,
-    password: string,
-    readonly phone: string,
+    name: string,
+    cpf: string,
+    phone: string,
   ) {
     this.email = new Email(email);
-    this.password = new Password(password);
+    this.name = name;
+    this.cpf = cpf;
+    this.phone = phone;
   }
 
   static create(
-    name: string,
     email: string,
-    password: string,
+    name: string,
+    cpf: string,
     phone: string,
   ) {
-    const businessId = uuidv4();
+    const businessId = crypto.randomUUID();
     return new Customer(
       businessId,
-      name,
       email,
-      password,
+      name,
+      cpf,
       phone,
     );
   }
@@ -54,9 +56,21 @@ class Customer {
     return this.email.getValue();
   }
 
-  getPassword() {
-    return this.password.getValue();
+  getName() {
+    return this.name;
   }
+
+  getCPF() {
+    return this.cpf;
+  }
+
+  getPhone() {
+    return this.phone;
+  }
+
+  // getPassword() {
+  // return this.password.getValue();
+  // }
 
 }
 

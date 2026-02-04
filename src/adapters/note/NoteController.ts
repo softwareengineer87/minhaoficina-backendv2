@@ -1,37 +1,54 @@
 import { Elysia, t } from "elysia";
 import type { NoteRepository } from "../../infra/repository/note/NoteRepository";
 import { MakeNote } from "../../domain/usecases/note/MakeNote";
+import { CustomerRepository } from "../../infra/repository/customer/CustomerRepository";
 
 class NoteController {
 
-  constructor(readonly app: Elysia, readonly noteRepository: NoteRepository) { }
+  constructor(
+    readonly app: Elysia,
+    readonly noteRepository: NoteRepository,
+    readonly customerRepository: CustomerRepository
+  ) { }
 
   async save() {
     this.app.post('/notes/:business_id', async ({ body, params, set }) => {
       try {
         const { business_id } = params;
         const {
+          email,
           name,
-          date,
-          tel,
           cpf,
+          phone,
           model,
           kilometer,
           plate,
-          observation
-        } = body;
+          observation,
+          date,
+        } = body as {
+          email: string,
+          name: string,
+          cpf: string,
+          phone: string,
+          model: string,
+          kilometer: number,
+          plate: string,
+          observation: string,
+          date: string,
+        };
         const inputMakeNote = {
           businessId: business_id,
+          email,
           name,
-          date,
-          tel,
           cpf,
+          phone,
           model,
           kilometer,
           plate,
-          observation
+          observation,
+          date,
         }
-        const makeNote = new MakeNote(this.noteRepository);
+        const makeNote = new MakeNote(this.noteRepository, this.customerRepository);
         const { noteId } = await makeNote.execute(inputMakeNote);
         set.status = 201;
         return {
@@ -48,21 +65,11 @@ class NoteController {
         }
 
       }
-    }, {
-      body: t.Object({
-        name: t.String(),
-        date: t.String(),
-        tel: t.String(),
-        cpf: t.String(),
-        model: t.String(),
-        kilometer: t.Number(),
-        plate: t.String(),
-        observation: t.String()
-      }),
+    }), {
       params: t.Object({
         business_id: t.String()
       })
-    })
+    }
   }
 
 }

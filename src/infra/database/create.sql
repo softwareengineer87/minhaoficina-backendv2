@@ -7,19 +7,26 @@ CREATE TABLE IF NOT EXISTS business (
   logo TEXT
 );
 
+CREATE TABLE IF NOT EXISTS customers (
+  customer_id TEXT PRIMARY KEY,
+  email TEXT,
+  name TEXT,
+  cpf TEXT,
+  phone TEXT
+);
+
 CREATE TABLE IF NOT EXISTS notes (
   note_id TEXT PRIMARY KEY,
   business_id TEXT,
-  name TEXT,
-  tel TEXT,
-  cpf TEXT,
+  customer_id TEXT,
   model TEXT,
   kilometer INTEGER,
   plate TEXT,
   observation TEXT,
   date TIMESTAMP,
 
-  CONSTRAINT fk_business FOREIGN KEY(business_id) REFERENCES business(business_id)
+  CONSTRAINT fk_business FOREIGN KEY(business_id) REFERENCES business(business_id),
+  CONSTRAINT fk_customer FOREIGN KEY(customer_id) REFERENCES customers(customer_id)
 );
 
 CREATE TABLE IF NOT EXISTS parts (

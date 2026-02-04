@@ -12,12 +12,11 @@ class NoteRepositoryDatabase implements NoteRepository {
 
   async save(note: Note): Promise<void> {
     await this.connection.query(`INSERT INTO notes 
-    (note_id, business_id, name, date, tel, cpf, model,
-    kilometer, plate, observation) 
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, [note.noteId,
-    note.businessId, note.name, note.date, note.tel,
-    note.cpf, note.model, note.kilometer, note.plate,
-    note.observation]);
+    (note_id, business_id, customer_id, model,
+    kilometer, plate, observation, date) 
+    VALUES($1,$2,$3,$4,$5,$6,$7, $8)`, [note.noteId,
+    note.businessId, note.customerId, note.model, note.kilometer,
+    note.plate, note.observation, note.date]);
   }
 
   async get(noteId: string): Promise<Note[]> {
