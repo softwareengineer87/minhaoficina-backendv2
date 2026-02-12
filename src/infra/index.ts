@@ -26,10 +26,11 @@ const businessController = new BusinessController(app, businessRepository);
 const noteController = new NoteController(app, noteRepository, customerRepository);
 businessController.save();
 businessController.signIn();
+businessController.makeLogo();
 noteController.save();
 
 const PORT = Number(process.env.PORT);
-app.listen(PORT, () => {
+app.listen(3333, () => {
   console.log(`Server running at ${app.server?.url}`)
 });
 

@@ -5,7 +5,7 @@ class Email {
     if (!email.match(/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/)) {
       throw new Error('Email inválido.');
     }
-    if (email === '') {
+    if (email === '' || email === undefined) {
       throw new Error('O email é obrigatório!');
     }
     this.value = email;

@@ -1,4 +1,5 @@
 import { Business } from "../../../domain/entities/business/Business";
+import { Logo } from "../../../domain/entities/business/Logo";
 import type { DatabaseConnection } from "../../database/PgPromiseAdapter";
 
 export interface BusinessRepository {
@@ -9,6 +10,7 @@ export interface BusinessRepository {
     password: string
   ): Promise<void>;
   getByEmail(email: string): Promise<Business | null>;
+  saveLogo(logo: Logo): Promise<void>;
 }
 
 class BusinessRepositoryDatabase implements BusinessRepository {
@@ -38,6 +40,12 @@ class BusinessRepositoryDatabase implements BusinessRepository {
       business.password
     );
 
+  }
+
+  async saveLogo(logo: Logo): Promise<void> {
+    await this.connection.query(`INSERT INTO logos
+    (photo_id, business_id, url) VALUES ($1, $2, $3)`,
+      [logo.logoId, logo.businessId, logo.url]);
   }
 
 }
