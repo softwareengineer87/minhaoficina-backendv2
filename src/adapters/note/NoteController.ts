@@ -2,6 +2,8 @@ import { Elysia, t } from "elysia";
 import type { NoteRepository } from "../../infra/repository/note/NoteRepository";
 import { MakeNote } from "../../domain/usecases/note/MakeNote";
 import { CustomerRepository } from "../../infra/repository/customer/CustomerRepository";
+import { GetAllNotes } from "../../domain/usecases/note/GetAllNotes";
+import { DatabaseConnection } from "../../infra/database/PgPromiseAdapter";
 
 class NoteController {
 
@@ -71,6 +73,31 @@ class NoteController {
         business_id: t.String()
       })
     }
+  }
+
+  allNotes(connection: DatabaseConnection) {
+    this.app.get('/notes', async ({ query, set }) => {
+      try {
+        const getAllNotes = new GetAllNotes(connection);
+        const { name } = query as { name: string };
+        const lowerName = name.toLocaleLowerCase();
+        let notes;
+        if (name) {
+          notes = getAllNotes.execute(lowerName);
+        } else {
+          notes = getAllNotes.execute();
+        }
+        set.status = 200;
+        return notes;
+      } catch (error: any) {
+        set.status = 500;
+        return {
+          statusCode: 500,
+          message: error.message || 'Error interno no servidor',
+          error: true
+        }
+      }
+    });
   }
 
 }

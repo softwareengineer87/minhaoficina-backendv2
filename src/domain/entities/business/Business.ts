@@ -5,7 +5,7 @@ import { sign, verify } from 'jsonwebtoken';
 class Business {
 
   private email: Email;
-  private password: Password;
+  password: Password;
 
   constructor(
     readonly businessId: string,

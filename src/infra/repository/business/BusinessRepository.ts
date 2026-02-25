@@ -11,6 +11,13 @@ export interface BusinessRepository {
   ): Promise<void>;
   getByEmail(email: string): Promise<Business | null>;
   saveLogo(logo: Logo): Promise<void>;
+  update(
+    businessId: string,
+    name: string,
+    email: string,
+    password?: string
+  ): Promise<void>;
+  getById(businessId: string): Promise<Business>;
 }
 
 class BusinessRepositoryDatabase implements BusinessRepository {
@@ -46,6 +53,29 @@ class BusinessRepositoryDatabase implements BusinessRepository {
     await this.connection.query(`INSERT INTO logos
     (photo_id, business_id, url) VALUES ($1, $2, $3)`,
       [logo.logoId, logo.businessId, logo.url]);
+  }
+
+  async update(
+    businessId: string,
+    name: string,
+    email: string,
+    password?: string
+  ): Promise<void> {
+    await this.connection.query(`UPDATE business SET
+    name = $1, email = $2, password = $3
+    WHERE business_id = $4`, [name, email,
+      password, businessId]);
+  }
+
+  async getById(businessId: string): Promise<Business> {
+    const [businessData] = await this.connection.query(`SELECT * FROM business
+    WHERE business_id = $1`, businessId);
+    return new Business(
+      businessData.business_id,
+      businessData.name,
+      businessData.email,
+      businessData.password
+    );
   }
 
 }

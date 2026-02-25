@@ -27,7 +27,10 @@ const noteController = new NoteController(app, noteRepository, customerRepositor
 businessController.save();
 businessController.signIn();
 businessController.makeLogo();
+businessController.update();
+businessController.getById();
 noteController.save();
+noteController.allNotes(connection);
 
 const PORT = Number(process.env.PORT);
 app.listen(3333, () => {

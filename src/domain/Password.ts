@@ -1,8 +1,8 @@
 
 class Password {
-  value: string;
+  value?: string;
 
-  constructor(password: string) {
+  constructor(password?: string) {
     if (password === '') {
       throw new Error('A senha é obrigatória.');
     }

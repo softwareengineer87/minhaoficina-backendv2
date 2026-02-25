@@ -5,6 +5,8 @@ import { SignIn } from "../../domain/usecases/business/SignIn";
 import type { BusinessRepository } from "../../infra/repository/business/BusinessRepository";
 import { cloudinary } from "../../infra/cloudinaryConfig";
 import { MakeLogo } from "../../domain/usecases/business/MakeLogo";
+import { Update } from "../../domain/usecases/business/Update";
+import { GetById } from "../../domain/usecases/business/GetById";
 
 class BusinessController {
 
@@ -119,6 +121,67 @@ class BusinessController {
           maxSize: '5m' // Opcional: limite de tamanho
         })
       })
+    });
+  }
+
+  update() {
+    this.app.put('/business/update/:business_id', async ({ body, params, set }) => {
+      try {
+        const update = new Update(this.businessRepository);
+        const {
+          name,
+          email,
+          password
+        } = body as {
+          name: string,
+          email: string,
+          password: string
+        };
+        const { business_id } = params;
+        const businessData: any = {
+          name,
+          email
+        }
+        if (password) {
+          businessData.password = await Bun.password.hash(password);
+        }
+        const { businessId } = await update.execute(business_id, businessData);
+        set.status = 201;
+        return {
+          businessId,
+          message: 'Empresa atualizada com sucesso!'
+        }
+      } catch (error: any) {
+        set.status = 500;
+        return {
+          statusCode: 500,
+          message: error.message || 'Erro interno no servidor',
+          error: true
+        }
+      }
+    }, {
+      params: t.Object({
+        business_id: t.String()
+      })
+    });
+  }
+
+  getById() {
+    this.app.get('business/getbyid/:business_id', async ({ params, set }) => {
+      try {
+        const getById = new GetById(this.businessRepository);
+        const { business_id } = params;
+        const business = await getById.execute(business_id);
+        set.status = 200;
+        return business;
+      } catch (error: any) {
+        set.status = 500;
+        return {
+          statusCode: 500,
+          message: error.message || 'Erro interno no servidor',
+          error: true
+        }
+      }
     });
   }
 
