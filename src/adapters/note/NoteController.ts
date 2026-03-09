@@ -79,13 +79,14 @@ class NoteController {
     this.app.get('/notes', async ({ query, set }) => {
       try {
         const getAllNotes = new GetAllNotes(connection);
-        const { name } = query as { name: string };
-        const lowerName = name.toLocaleLowerCase();
+        const { name, page } = query as { name: string, page: string };
+        const convertPage = Number(page);
         let notes;
         if (name) {
-          notes = getAllNotes.execute(lowerName);
+          const lowerName = name.toLocaleLowerCase();
+          notes = getAllNotes.execute(convertPage, lowerName);
         } else {
-          notes = getAllNotes.execute();
+          notes = getAllNotes.execute(convertPage);
         }
         set.status = 200;
         return notes;

@@ -7,6 +7,8 @@ import { cloudinary } from "../../infra/cloudinaryConfig";
 import { MakeLogo } from "../../domain/usecases/business/MakeLogo";
 import { Update } from "../../domain/usecases/business/Update";
 import { GetById } from "../../domain/usecases/business/GetById";
+import { GetLogo } from "../../domain/usecases/business/GetLogo";
+import { DatabaseConnection } from "../../infra/database/PgPromiseAdapter";
 
 class BusinessController {
 
@@ -81,7 +83,6 @@ class BusinessController {
     this.app.post('/business/logo/:business_id', async ({ body, params, set }) => {
       try {
         const makeLogo = new MakeLogo(this.businessRepository);
-        console.log('ok...');
         const { business_id } = params as { business_id: string };
         const photo = body as { imagem: File };
         const arrayBuffer = await photo.imagem.arrayBuffer();
@@ -121,6 +122,28 @@ class BusinessController {
           maxSize: '5m' // Opcional: limite de tamanho
         })
       })
+    });
+  }
+
+  getLogo(connection: DatabaseConnection) {
+    this.app.get('business/logo/:business_id', async ({ params, set }) => {
+      try {
+        const { business_id } = params as { business_id: string };
+        const getLogo = new GetLogo(connection);
+        const { logoId, businessId, url } = await getLogo.execute(business_id);
+        return {
+          logoId,
+          businessId,
+          url
+        }
+      } catch (error: any) {
+        set.status = 500;
+        return {
+          statusCode: 500,
+          message: error.message || 'Erro interno no servidor',
+          error: true
+        }
+      }
     });
   }
 

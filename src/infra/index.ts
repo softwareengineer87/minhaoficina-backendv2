@@ -29,6 +29,7 @@ businessController.signIn();
 businessController.makeLogo();
 businessController.update();
 businessController.getById();
+businessController.getLogo(connection);
 noteController.save();
 noteController.allNotes(connection);
 

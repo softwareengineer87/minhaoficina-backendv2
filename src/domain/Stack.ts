@@ -43,7 +43,7 @@ class Stack {
     return this.items;
   }
 
-  seach(name: string) {
+  search(name: string) {
     if (this.isEmpty()) {
       return {};
     }
@@ -56,6 +56,11 @@ class Stack {
       }
     }
     return names;
+  }
+
+  clear() {
+    this.count = 0;
+    this.items = {};
   }
 
 }
