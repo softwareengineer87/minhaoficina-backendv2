@@ -3,12 +3,12 @@ import { Signup } from "../../domain/usecases/business/Signup";
 import { GetByEmail } from "../../domain/usecases/business/GetByEmail";
 import { SignIn } from "../../domain/usecases/business/SignIn";
 import type { BusinessRepository } from "../../infra/repository/business/BusinessRepository";
-import { cloudinary } from "../../infra/cloudinaryConfig";
 import { MakeLogo } from "../../domain/usecases/business/MakeLogo";
 import { Update } from "../../domain/usecases/business/Update";
 import { GetById } from "../../domain/usecases/business/GetById";
 import { GetLogo } from "../../domain/usecases/business/GetLogo";
-import { DatabaseConnection } from "../../infra/database/PgPromiseAdapter";
+import { Cloudinary } from "../Cloudinary";
+import { CloudinaryModel } from "../CloudinaryModel";
 
 class BusinessController {
 
@@ -82,25 +82,18 @@ class BusinessController {
   makeLogo() {
     this.app.post('/business/logo/:business_id', async ({ body, params, set }) => {
       try {
+        const cloudinary = new Cloudinary();
         const makeLogo = new MakeLogo(this.businessRepository);
         const { business_id } = params as { business_id: string };
         const photo = body as { imagem: File };
         const arrayBuffer = await photo.imagem.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
-
-        const uploadResult = await new Promise<any>((resolve, reject) => {
-          cloudinary.uploader.upload_stream(
-            { folder: 'minha-oficina' },
-            (error, result) => {
-              if (error) return reject(error);
-              resolve(result);
-            }
-          ).end(buffer);
-        });
+        const uploadResult: CloudinaryModel = await cloudinary.upload(buffer, 'minhaoficina');
 
         const { logoId } = await makeLogo.execute(
           business_id,
-          uploadResult.secure_url
+          uploadResult.secure_url,
+          uploadResult.public_id
         );
         return {
           logoId,
@@ -125,11 +118,11 @@ class BusinessController {
     });
   }
 
-  getLogo(connection: DatabaseConnection) {
+  getLogo() {
     this.app.get('business/logo/:business_id', async ({ params, set }) => {
       try {
         const { business_id } = params as { business_id: string };
-        const getLogo = new GetLogo(connection);
+        const getLogo = new GetLogo(this.businessRepository);
         const { logoId, businessId, url } = await getLogo.execute(business_id);
         return {
           logoId,

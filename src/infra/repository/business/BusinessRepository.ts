@@ -11,6 +11,7 @@ export interface BusinessRepository {
   ): Promise<void>;
   getByEmail(email: string): Promise<Business | null>;
   saveLogo(logo: Logo): Promise<void>;
+  getLogo(businessId: string): Promise<Logo>;
   update(
     businessId: string,
     name: string,
@@ -18,6 +19,8 @@ export interface BusinessRepository {
     password?: string
   ): Promise<void>;
   getById(businessId: string): Promise<Business>;
+  updateLogo(logo: Logo): Promise<void>;
+  getLogoById(businessId: string): Promise<Logo | null>;
 }
 
 class BusinessRepositoryDatabase implements BusinessRepository {
@@ -51,8 +54,19 @@ class BusinessRepositoryDatabase implements BusinessRepository {
 
   async saveLogo(logo: Logo): Promise<void> {
     await this.connection.query(`INSERT INTO logos
-    (photo_id, business_id, url) VALUES ($1, $2, $3)`,
-      [logo.logoId, logo.businessId, logo.url]);
+    (logo_id, business_id, url, public_id) VALUES ($1, $2, $3, $4)`,
+      [logo.logoId, logo.businessId, logo.url, logo.publicId]);
+  }
+
+  async getLogo(businessId: string): Promise<Logo> {
+    const [logoData] = await this.connection.query(`SELECT * FROM logos 
+    WHERE business_id = $1`, [businessId]);
+    return new Logo(
+      logoData.logo_id,
+      logoData.business_id,
+      logoData.url,
+      logoData.public_id
+    );
   }
 
   async update(
@@ -76,6 +90,26 @@ class BusinessRepositoryDatabase implements BusinessRepository {
       businessData.email,
       businessData.password
     );
+  }
+
+  async updateLogo(logo: Logo): Promise<void> {
+    await this.connection.query(`UPDATE logos SET business_id = $1, 
+      url = $2, public_id = $3`,
+      [logo.businessId, logo.url, logo.publicId]);
+  }
+
+  async getLogoById(businessId: string): Promise<Logo | null> {
+    const [logoData] = await this.connection.query(`SELECT * FROM logos
+    WHERE business_id = $1`, [businessId]);
+    if (logoData) {
+      return new Logo(
+        logoData.logo_id,
+        logoData.business_id,
+        logoData.url,
+        logoData.public_id
+      );
+    }
+    return null;
   }
 
 }

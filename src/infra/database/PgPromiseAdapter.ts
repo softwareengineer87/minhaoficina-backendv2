@@ -8,6 +8,7 @@ export interface DatabaseConnection {
 
 class PgPromiseAdapter implements DatabaseConnection {
 
+
   protected connection: any
 
   constructor() {
@@ -30,6 +31,22 @@ class PgPromiseAdapter implements DatabaseConnection {
     const filePath = join(script);
     const query = new pgPromise.QueryFile(filePath);
     return await this.connection.query(query);
+  }
+
+  async createDatabase() {
+    try {
+      const result = await this.connection.query(`SELECT 1 FROM pg_database WHERE datname = 'minhaoficina_db'`, []);
+      if (result.length === 0) {
+        console.log(`Criando banco de dados: minhaoficina_db...`);
+        await this.connection.query('CREATE DATABASE minhaoficina_db', []);
+        console.log('Banco de dados criado com sucesso!');
+      } else {
+        console.log('O banco de dados já existe, pulando criação.');
+      }
+    } catch (error: any) {
+      console.error('Erro ao verificar ou criar o banco de dados:', error);
+      process.exit(1);
+    }
   }
 
   async close(): Promise<void> {

@@ -16,7 +16,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
+
 const connection = new PgPromiseAdapter();
+connection.createDatabase();
 connection.executeScript('./database/create.sql');
 //connection.query(createSql, []).catch(console.error);
 const businessRepository = new BusinessRepositoryDatabase(connection);
@@ -29,7 +31,7 @@ businessController.signIn();
 businessController.makeLogo();
 businessController.update();
 businessController.getById();
-businessController.getLogo(connection);
+businessController.getLogo();
 noteController.save();
 noteController.allNotes(connection);
 

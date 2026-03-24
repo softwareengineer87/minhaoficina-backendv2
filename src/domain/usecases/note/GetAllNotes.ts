@@ -6,10 +6,15 @@ class GetAllNotes {
 
   constructor(readonly connection: DatabaseConnection) { }
 
-  async execute(page: number, name?: string): Promise<Output> {
+  async execute(
+    businessId: string,
+    page: number,
+    name?: string
+  ): Promise<Output> {
     const LIMIT = 10;
     const items = await this.connection.query(`SELECT n.*, c.* FROM notes AS n
-    JOIN customers AS c ON c.customer_id = n.customer_id`, []);
+    JOIN customers AS c ON c.customer_id = n.customer_id
+    WHERE n.business_id = $1`, [businessId]);
     const pagination = new Pagination(LIMIT);
     pagination.paginator(page, items);
     const paginationObj = {
@@ -18,17 +23,23 @@ class GetAllNotes {
       totalItems: pagination.totalItems,
       prevPage: pagination.prevPage,
       nextPage: pagination.nextPage,
-      totalPages: pagination.totalPages
+      totalPages: pagination.totalPages,
+      offset: pagination.offset
     }
     const data = await this.connection.query(`SELECT n.*, c.* FROM notes AS n
     JOIN customers AS c ON c.customer_id = n.customer_id
-    LIMIT $1 OFFSET $2`, [LIMIT, pagination.offset]);
+    WHERE n.business_id = $1 LIMIT $2 OFFSET $3`, [businessId, LIMIT, pagination.offset]);
     const stack = new Stack();
     for (let i = 0; i < data.length; i++) {
       stack.push(data[i]);
     }
+    if (name === '') {
+      return {
+        notes: stack.getItems(),
+        pagination: paginationObj
+      }
+    }
     if (name) {
-      console.log(stack.getItems());
       return {
         notes: stack.search(name),
         pagination: paginationObj
@@ -55,6 +66,7 @@ type PaginationType = {
   prevPage: number;
   nextPage: number;
   totalPages: number;
+  offset: number;
 }
 
 export { GetAllNotes }

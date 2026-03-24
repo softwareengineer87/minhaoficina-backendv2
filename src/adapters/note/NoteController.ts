@@ -76,17 +76,18 @@ class NoteController {
   }
 
   allNotes(connection: DatabaseConnection) {
-    this.app.get('/notes', async ({ query, set }) => {
+    this.app.get('/notes/:business_id', async ({ query, params, set }) => {
       try {
         const getAllNotes = new GetAllNotes(connection);
         const { name, page } = query as { name: string, page: string };
+        const { business_id } = params as { business_id: string };
         const convertPage = Number(page);
         let notes;
         if (name) {
           const lowerName = name.toLocaleLowerCase();
-          notes = getAllNotes.execute(convertPage, lowerName);
+          notes = await getAllNotes.execute(business_id, convertPage, lowerName);
         } else {
-          notes = getAllNotes.execute(convertPage);
+          notes = await getAllNotes.execute(business_id, convertPage);
         }
         set.status = 200;
         return notes;

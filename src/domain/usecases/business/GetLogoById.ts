@@ -1,14 +1,12 @@
+
 import { BusinessRepository } from "../../../infra/repository/business/BusinessRepository";
 
-class GetLogo {
+class GetLogoById {
 
   constructor(readonly businessRepository: BusinessRepository) { }
 
-  async execute(businessId: string): Promise<Output> {
-    const logo = await this.businessRepository.getLogo(businessId);
-    if (logo.businessId !== businessId) {
-      this.businessRepository.updateLogo(businessId);
-    }
+  async execute(logoId: string): Promise<Output> {
+    const logo = await this.businessRepository.getLogoById(logoId);
 
     return {
       logoId: logo.logoId,
@@ -25,5 +23,4 @@ type Output = {
   url: string;
 }
 
-export { GetLogo }
-
+export { GetLogoById }

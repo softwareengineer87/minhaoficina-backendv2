@@ -58,9 +58,10 @@ CREATE TABLE IF NOT EXISTS photos (
 );
 
 CREATE TABLE IF NOT EXISTS logos (
-  photo_id TEXT PRIMARY KEY,
+  logo_id TEXT PRIMARY KEY,
   business_id TEXT,
   url TEXT,
+  public_id TEXT,
   
   CONSTRAINT fk_business FOREIGN KEY(business_id) REFERENCES business(business_id)  
 );
