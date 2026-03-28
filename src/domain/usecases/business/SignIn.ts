@@ -1,8 +1,13 @@
-import type { BusinessRepository } from "../../../infra/repository/BusinessRepository";
+import { JwtAdapter } from "../../../adapters/JwtAdapter";
+import { BusinessRepository } from "../../../infra/repository/business/BusinessRepository";
 
 class SignIn {
 
-  constructor(readonly businessRepository: BusinessRepository) { }
+  private jwt;
+
+  constructor(readonly businessRepository: BusinessRepository) {
+    this.jwt = new JwtAdapter();
+  }
 
   async execute(email: string, password: string): Promise<any> {
     const business = await this.businessRepository.getByEmail(email);
@@ -16,8 +21,14 @@ class SignIn {
       throw new Error('Email ou senha inválidos, tente novamente.');
     }
 
-    const token = business.generateToken();
-    const payload = business.verifyToken(token);
+    const businesPayload = {
+      businessId: business.businessId,
+      name: business.name,
+      email: business.getEmail(),
+    }
+
+    const token = this.jwt.generateToken(businesPayload);
+    const payload = this.jwt.verifyToken(token);
 
     return {
       token,

@@ -1,16 +1,18 @@
-import { Elysia, t } from "elysia";
+import { Elysia, HTTPMethod, t } from "elysia";
 import type { NoteRepository } from "../../infra/repository/note/NoteRepository";
 import { MakeNote } from "../../domain/usecases/note/MakeNote";
 import { CustomerRepository } from "../../infra/repository/customer/CustomerRepository";
 import { GetAllNotes } from "../../domain/usecases/note/GetAllNotes";
-import { DatabaseConnection } from "../../infra/database/PgPromiseAdapter";
+import { DatabaseConnection, PgPromiseAdapter } from "../../infra/database/PgPromiseAdapter";
+import { authMiddleware } from "../../middlewares/authMiddleware";
 
 class NoteController {
 
   constructor(
     readonly app: Elysia,
     readonly noteRepository: NoteRepository,
-    readonly customerRepository: CustomerRepository
+    readonly customerRepository: CustomerRepository,
+    readonly connection: DatabaseConnection
   ) { }
 
   async save() {
@@ -75,10 +77,10 @@ class NoteController {
     }
   }
 
-  allNotes(connection: DatabaseConnection) {
+  allNotes() {
     this.app.get('/notes/:business_id', async ({ query, params, set }) => {
       try {
-        const getAllNotes = new GetAllNotes(connection);
+        const getAllNotes = new GetAllNotes(this.connection);
         const { name, page } = query as { name: string, page: string };
         const { business_id } = params as { business_id: string };
         const convertPage = Number(page);
@@ -100,6 +102,31 @@ class NoteController {
         }
       }
     });
+  }
+
+  async getNotes(query: any, params: any, set: any) {
+    try {
+      const getAllNotes = new GetAllNotes(this.connection);
+      const { name, page } = query as { name: string, page: string };
+      const { business_id } = params as { business_id: string };
+      const convertPage = Number(page);
+      let notes;
+      if (name) {
+        const lowerName = name.toLocaleLowerCase();
+        notes = await getAllNotes.execute(business_id, convertPage, lowerName);
+      } else {
+        notes = await getAllNotes.execute(business_id, convertPage);
+      }
+      set.status = 200;
+      return notes;
+    } catch (error: any) {
+      set.status = 500;
+      return {
+        statusCode: 500,
+        message: error.message || 'Error interno no servidor',
+        error: true
+      }
+    }
   }
 
 }
