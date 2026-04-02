@@ -21,7 +21,6 @@ app.use(cors({
 app.use(cookie());
 
 const connection = new PgPromiseAdapter();
-connection.createDatabase();
 connection.executeScript('./database/create.sql');
 //connection.query(createSql, []).catch(console.error);
 
