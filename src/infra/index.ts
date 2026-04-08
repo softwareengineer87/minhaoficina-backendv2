@@ -9,6 +9,8 @@ import { NoteController } from '../adapters/note/NoteController';
 import { NoteRepositoryDatabase } from './repository/note/NoteRepository';
 import { CustomerRepositoryDatabase } from './repository/customer/CustomerRepository';
 import { cookie } from '@elysiajs/cookie';
+import { StockController } from '../adapters/stock/StockController';
+import { StockRepositoryDadabase } from './repository/stock/StockRepository';
 const app = new Elysia()
 
 app.use(cors({
@@ -26,9 +28,11 @@ connection.executeScript('./database/create.sql');
 
 const businessRepository = new BusinessRepositoryDatabase(connection);
 const noteRepository = new NoteRepositoryDatabase(connection);
+const stockRepository = new StockRepositoryDadabase(connection);
 const customerRepository = new CustomerRepositoryDatabase(connection);
 const noteController = new NoteController(app, noteRepository, customerRepository, connection);
 const businessController = new BusinessController(app, businessRepository);
+const stockController = new StockController(app, stockRepository);
 businessController.save();
 businessController.signIn();
 businessController.makeLogo();
@@ -36,7 +40,10 @@ businessController.update();
 businessController.getById();
 businessController.getLogo();
 noteController.save();
-// noteController.allNotes(connection);
+stockController.save();
+stockController.update();
+stockController.getAll(connection);
+
 app.group('/dashboard', (app) => app
   .onBeforeHandle(({ headers, set }) => {
     const authTokenName = headers.cookie ? headers.cookie.split('=')[0] : null;

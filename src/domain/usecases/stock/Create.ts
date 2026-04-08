@@ -26,7 +26,6 @@ type Input = {
   title: string;
   price: number;
   quantity: number;
-  createdAt: Date;
 }
 
 type Output = {

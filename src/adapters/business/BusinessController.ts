@@ -9,7 +9,6 @@ import { GetById } from "../../domain/usecases/business/GetById";
 import { GetLogo } from "../../domain/usecases/business/GetLogo";
 import { Cloudinary } from "../Cloudinary";
 import { CloudinaryModel } from "../CloudinaryModel";
-import { authMiddleware } from "../../middlewares/authMiddleware";
 
 class BusinessController {
 
