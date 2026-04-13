@@ -16,6 +16,18 @@ class Stock {
     quantity: number,
     createdAt: Date
   ) {
+    if (!businessId) {
+      throw new Error('Você não está logado');
+    }
+    if (title === '' || title === undefined) {
+      throw new Error('O titulo é obrigatório.');
+    }
+    if (price <= 0 || price === undefined) {
+      throw new Error('O preço é obrigatório e precisa ser maior que zero.');
+    }
+    if (quantity <= 0 || price === undefined) {
+      throw new Error('A quantidade é obrigatória e precisa ser maior ou igual a 1.');
+    }
     this.productId = productId;
     this.businessId = businessId;
     this.title = title;

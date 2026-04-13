@@ -1,6 +1,6 @@
 import { DatabaseConnection } from "../../../infra/database/PgPromiseAdapter";
+import { Note } from "../../entities/note/Note";
 import { Pagination } from "../../Pagination";
-import { Stack } from "../../Stack";
 
 class GetAllNotes {
 
@@ -17,45 +17,29 @@ class GetAllNotes {
     WHERE n.business_id = $1`, [businessId]);
     const pagination = new Pagination(LIMIT);
     pagination.paginator(page, items);
-    const paginationObj = {
-      actualPage: pagination.actualPage,
-      lastPage: pagination.lastPage,
-      totalItems: pagination.totalItems,
-      prevPage: pagination.prevPage,
-      nextPage: pagination.nextPage,
-      totalPages: pagination.totalPages,
-      offset: pagination.offset
-    }
-    const data = await this.connection.query(`SELECT n.*, c.* FROM notes AS n
-    JOIN customers AS c ON c.customer_id = n.customer_id
-    WHERE n.business_id = $1 LIMIT $2 OFFSET $3`, [businessId, LIMIT, pagination.offset]);
-    const stack = new Stack();
-    for (let i = 0; i < data.length; i++) {
-      stack.push(data[i]);
-    }
-    if (name === '') {
-      return {
-        notes: stack.getItems(),
-        pagination: paginationObj
-      }
-    }
-    if (name) {
-      return {
-        notes: stack.search(name),
-        pagination: paginationObj
-      }
-    }
 
+    let notes: Note[] = [];
+    if (name) {
+      notes = await this.connection.query(`SELECT n.*, c.* FROM notes AS n
+      JOIN customers AS c ON c.customer_id = n.customer_id
+      WHERE n.business_id = $1 AND name ILIKE $2 LIMIT $3 OFFSET $4`,
+        [businessId, `%${name}%`, LIMIT, pagination.offset]);
+    } else {
+      notes = await this.connection.query(`SELECT n.*, c.* FROM notes AS n
+      JOIN customers AS c ON c.customer_id = n.customer_id
+      WHERE n.business_id = $1 LIMIT $2 OFFSET $3`,
+        [businessId, LIMIT, pagination.offset]);
+    }
     return {
-      notes: stack.getItems(),
-      pagination: paginationObj
+      notes,
+      pagination
     }
   }
 
 }
 
 type Output = {
-  notes: any,
+  notes: Note[],
   pagination: PaginationType
 }
 

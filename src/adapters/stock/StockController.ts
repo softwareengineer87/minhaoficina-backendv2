@@ -4,6 +4,7 @@ import { StockRepository } from "../../infra/repository/stock/StockRepository";
 import { Update } from "../../domain/usecases/stock/Update";
 import { GetAll } from "../../domain/usecases/stock/GetAll";
 import { DatabaseConnection } from "../../infra/database/PgPromiseAdapter";
+import { Delete } from "../../domain/usecases/stock/Delete";
 
 class StockController {
 
@@ -89,7 +90,7 @@ class StockController {
         }
       } catch (error: any) {
         set.status = 500;
-        console.log(`Erro ao cadastrar peça: ${error.message}`);
+        console.log(`Erro ao atualizar peça: ${error.message}`);
         return {
           statusCode: 500,
           message: error.message || 'Erro interno no servidor',
@@ -119,7 +120,30 @@ class StockController {
         }
       } catch (error: any) {
         set.status = 500;
-        console.log(`Erro ao buscar peças: ${error.message}`);
+        console.log(`Erro ao buscar produtos: ${error.message}`);
+        return {
+          statusCode: 500,
+          message: error.message || 'Erro interno no servidor',
+          error: true
+        }
+      }
+    });
+  }
+
+  deleteStock() {
+    this.app.delete('/stock/:product_id', async ({ params, set }) => {
+      try {
+        const { product_id } = params as { product_id: string };
+        const deleteProduct = new Delete(this.stockRepository);
+        const { productId } = await deleteProduct.execute(product_id);
+        return {
+          message: 'Produto deletado com sucesso!',
+          productId,
+          error: false
+        }
+      } catch (error: any) {
+        set.status = 500;
+        console.log(`Erro ao deletar produto: ${error.message}`);
         return {
           statusCode: 500,
           message: error.message || 'Erro interno no servidor',

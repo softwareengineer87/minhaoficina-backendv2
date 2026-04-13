@@ -43,6 +43,7 @@ noteController.save();
 stockController.save();
 stockController.update();
 stockController.getAll(connection);
+stockController.deleteStock();
 
 app.group('/dashboard', (app) => app
   .onBeforeHandle(({ headers, set }) => {

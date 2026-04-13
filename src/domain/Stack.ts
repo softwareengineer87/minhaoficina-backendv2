@@ -50,7 +50,7 @@ class Stack {
     const names = {};
     let index = 0;
     for (let i = 0; i < this.count; i++) {
-      if (this.items[i].name.toLocaleLowerCase() === name) {
+      if (this.items[i].name.toLocaleLowerCase().sttarsWith() === name) {
         names[index] = this.items[i];
         index++;
       }

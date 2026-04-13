@@ -13,6 +13,7 @@ export interface StockRepository {
     createdAt: Date
   ): Promise<void>;
   getAll(businessId: string): Promise<Stock[]>;
+  delete(productId: string): Promise<void>;
 }
 
 class StockRepositoryDadabase implements StockRepository {
@@ -59,6 +60,11 @@ class StockRepositoryDadabase implements StockRepository {
     const stocks = await this.connection.query(`SELECT * FROM stocks
     WHERE business_id = $1`, [businessId]);
     return stocks;
+  }
+
+  async delete(productId: string): Promise<void> {
+    await this.connection.query(`DELETE FROM stocks
+    WHERE product_id = $1`, [productId]);
   }
 
 }
