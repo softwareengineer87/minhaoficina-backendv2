@@ -10,6 +10,7 @@ export interface StockRepository {
     title: string,
     price: number,
     quantity: number,
+    minimumStock: number,
     createdAt: Date
   ): Promise<void>;
   getAll(businessId: string): Promise<Stock[]>;
@@ -22,9 +23,9 @@ class StockRepositoryDadabase implements StockRepository {
 
   async save(stock: Stock): Promise<void> {
     await this.connection.query(`INSERT INTO stocks 
-    (product_id, business_id, title, price, quantity, created_at)
-    VALUES($1, $2, $3, $4, $5, $6)`, [stock.productId, stock.businessId, stock.title,
-    stock.price, stock.quantity, stock.createdAt]);
+    (product_id, business_id, title, price, quantity, minimum_stock, created_at)
+    VALUES($1, $2, $3, $4, $5, $6, $7)`, [stock.productId, stock.businessId, stock.title,
+    stock.price, stock.quantity, stock.minimumStock, stock.createdAt]);
   }
 
   async update(
@@ -33,13 +34,14 @@ class StockRepositoryDadabase implements StockRepository {
     title: string,
     price: number,
     quantity: number,
+    minimumStock: number,
     createdAt: Date
   ): Promise<void> {
     await this.connection.query(`UPDATE stocks SET 
     business_id = $1, title = $2, price = $3, 
-    quantity = $4, created_at = $5
-    WHERE product_id = $6`, [businessId, title,
-      price, quantity, createdAt, productId]);
+    quantity = $4, minimum_stock = $5, created_at = $6
+    WHERE product_id = $7`, [businessId, title,
+      price, quantity, minimumStock, createdAt, productId]);
   }
 
   async getById(productId: string): Promise<Stock> {
@@ -52,6 +54,7 @@ class StockRepositoryDadabase implements StockRepository {
       stockData.title,
       stockData.price,
       stockData.quantity,
+      stockData.minimumStock,
       stockData.created_at
     );
   }

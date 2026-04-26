@@ -11,7 +11,8 @@ class Create implements UseCase<Input, Output> {
       input.businessId,
       input.title,
       input.price,
-      input.quantity
+      input.quantity,
+      input.minimumStock
     );
     await this.stockRepository.save(stock);
 
@@ -26,6 +27,7 @@ type Input = {
   title: string;
   price: number;
   quantity: number;
+  minimumStock: number;
 }
 
 type Output = {

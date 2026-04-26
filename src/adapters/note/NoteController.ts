@@ -52,7 +52,6 @@ class NoteController {
           observation,
           date,
         }
-        console.log(inputMakeNote);
         const makeNote = new MakeNote(this.noteRepository, this.customerRepository);
         const { noteId } = await makeNote.execute(inputMakeNote);
         set.status = 201;

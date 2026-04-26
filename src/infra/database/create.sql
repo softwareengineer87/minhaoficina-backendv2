@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS stocks (
   title TEXT,
   price NUMERIC,
   quantity NUMERIC,
+  minimum_stock INT,
   created_at TIMESTAMP,
 
   CONSTRAINT fk_business FOREIGN KEY(business_id) REFERENCES business(business_id)

@@ -26,18 +26,21 @@ class StockController {
         const {
           title,
           price,
-          quantity
+          quantity,
+          minimum_stock
         } = body as {
           title: string,
           price: number,
-          quantity: number
+          quantity: number,
+          minimum_stock: number
         };
         const createStock = new Create(this.stockRepository);
         const inputStock = {
           businessId: business_id,
           title,
           price,
-          quantity
+          quantity,
+          minimumStock: minimum_stock
         }
         const { productId } = await createStock.execute(inputStock);
         set.status = 201;
@@ -108,7 +111,7 @@ class StockController {
         const LIMIT = 10;
         const convertPage = Number(page);
         const getAll = new GetAll(connection);
-        const { stocks, pagination } = await getAll.execute(
+        const { stocks, pagination, allStocks } = await getAll.execute(
           business_id,
           LIMIT,
           convertPage,
@@ -116,7 +119,8 @@ class StockController {
         );
         return {
           stocks,
-          pagination
+          pagination,
+          allStocks
         }
       } catch (error: any) {
         set.status = 500;

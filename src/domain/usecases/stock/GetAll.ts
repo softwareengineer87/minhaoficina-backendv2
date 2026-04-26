@@ -14,7 +14,6 @@ class GetAll {
     const allStocks = await this.connection.query(`SELECT * FROM stocks
     WHERE business_id = $1`, [businessId]);
     const pagination = new Pagination(limit);
-    console.log(typeof page);
     pagination.paginator(page, allStocks);
 
     let stocks: Stock[] = [];
@@ -29,14 +28,16 @@ class GetAll {
     }
     return {
       stocks,
-      pagination
+      pagination,
+      allStocks
     };
   }
 }
 
 type Output = {
-  stocks: Stock[],
-  pagination: Pagination
+  stocks: Stock[];
+  pagination: Pagination;
+  allStocks: Stock[];
 }
 
 export { GetAll }

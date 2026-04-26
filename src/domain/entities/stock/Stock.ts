@@ -6,6 +6,7 @@ class Stock {
   title: string;
   price: number;
   quantity: number;
+  minimumStock: number;
   createdAt: Date;
 
   constructor(
@@ -14,6 +15,7 @@ class Stock {
     title: string,
     price: number,
     quantity: number,
+    minimumStock: number,
     createdAt: Date
   ) {
     if (!businessId) {
@@ -28,11 +30,15 @@ class Stock {
     if (quantity <= 0 || price === undefined) {
       throw new Error('A quantidade é obrigatória e precisa ser maior ou igual a 1.');
     }
+    if (minimumStock < 1 || minimumStock === undefined) {
+      throw new Error('O estoque minimo precisa ser maior que 1 e é obrigatório');
+    }
     this.productId = productId;
     this.businessId = businessId;
     this.title = title;
     this.price = price;
     this.quantity = quantity;
+    this.minimumStock = minimumStock;
     this.createdAt = createdAt;
   }
 
@@ -40,7 +46,8 @@ class Stock {
     businessId: string,
     title: string,
     price: number,
-    quantity: number
+    quantity: number,
+    minimumStock: number
   ) {
     const productId = crypto.randomUUID();
     const createdAt = new Date();
@@ -50,6 +57,7 @@ class Stock {
       title,
       price,
       quantity,
+      minimumStock,
       createdAt
     );
   }
