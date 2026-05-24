@@ -15,6 +15,7 @@ export interface StockRepository {
   ): Promise<void>;
   getAll(businessId: string): Promise<Stock[]>;
   delete(productId: string): Promise<void>;
+  search(businessId: string, title: string): Promise<Stock[]>;
 }
 
 class StockRepositoryDadabase implements StockRepository {
@@ -68,6 +69,14 @@ class StockRepositoryDadabase implements StockRepository {
   async delete(productId: string): Promise<void> {
     await this.connection.query(`DELETE FROM stocks
     WHERE product_id = $1`, [productId]);
+  }
+
+  async search(businessId: string, title: string): Promise<Stock[]> {
+    const stocks = await this.connection.query(`SELECT * FROM stocks
+    WHERE business_id = $1 AND title ILIKE $2`,
+      [businessId, `%${title}%`]);
+
+    return stocks;
   }
 
 }

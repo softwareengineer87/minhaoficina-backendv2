@@ -39,11 +39,14 @@ businessController.makeLogo();
 businessController.update();
 businessController.getById();
 businessController.getLogo();
+businessController.saveNotification();
+businessController.getNotifications();
 noteController.save();
 stockController.save();
 stockController.update();
 stockController.getAll(connection);
 stockController.deleteStock();
+stockController.search();
 
 app.group('/dashboard', (app) => app
   .onBeforeHandle(({ headers, set }) => {
@@ -66,6 +69,36 @@ app.group('/dashboard', (app) => app
   .get('/config', () => 'config')
   .get('/notes/:business_id', ({ query, params, set }) => noteController.getNotes(query, params, set))
 )
+
+app.ws('ws', {
+  open(ws) {
+    ws.subscribe('notification');
+    console.log(`cliente ${ws.id} entrou.`);
+    ws.publish('chat-geral', {
+      system: true,
+      text: 'Novo usuario conectado',
+      message: ws.data
+    })
+  },
+
+  message(ws, message) {
+    const { id } = ws.data.query;
+    ws.publish('notification', {
+      id,
+      message,
+      time: Date.now()
+    });
+    ws.send({
+      message
+    });
+    console.log(message);
+  },
+
+  // close(ws) {
+  //   console.log(`cliente ${ws.id} saiu.`);
+  // }
+
+});
 
 const PORT = Number(process.env.PORT);
 app.listen(3333, () => {

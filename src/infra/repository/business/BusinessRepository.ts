@@ -1,5 +1,6 @@
 import { Business } from "../../../domain/entities/business/Business";
 import { Logo } from "../../../domain/entities/business/Logo";
+import { Notification } from "../../../domain/entities/business/Notification";
 import type { DatabaseConnection } from "../../database/PgPromiseAdapter";
 
 export interface BusinessRepository {
@@ -21,6 +22,8 @@ export interface BusinessRepository {
   getById(businessId: string): Promise<Business>;
   updateLogo(logo: Logo): Promise<void>;
   getLogoById(businessId: string): Promise<Logo | null>;
+  saveNotifications(notification: Notification): Promise<void>;
+  getNotifications(businessId: string): Promise<Notification[]>;
 }
 
 class BusinessRepositoryDatabase implements BusinessRepository {
@@ -110,6 +113,18 @@ class BusinessRepositoryDatabase implements BusinessRepository {
       );
     }
     return null;
+  }
+
+  async saveNotifications(notification: Notification): Promise<void> {
+    await this.connection.query(`INSERT INTO notifications (notification_id,
+    business_id, title) VALUES ($1, $2, $3)`, [notification.notificationId,
+    notification.businessId, notification.title]);
+  }
+
+  async getNotifications(businessId: string): Promise<Notification[]> {
+    const notifications = await this.connection.query(`SELECT * FROM notifications
+    WHERE business_id = $1`, [businessId])
+    return notifications;
   }
 
 }

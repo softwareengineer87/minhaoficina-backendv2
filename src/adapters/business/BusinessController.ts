@@ -9,6 +9,8 @@ import { GetById } from "../../domain/usecases/business/GetById";
 import { GetLogo } from "../../domain/usecases/business/GetLogo";
 import { Cloudinary } from "../Cloudinary";
 import { CloudinaryModel } from "../CloudinaryModel";
+import { SaveNotification } from "../../domain/usecases/business/SaveNotification";
+import { GetNotifications } from "../../domain/usecases/business/GetNotifications";
 
 class BusinessController {
 
@@ -200,6 +202,56 @@ class BusinessController {
       }
     });
   }
+
+  saveNotification() {
+    this.app.post('/business/notifications/:business_id', async ({ body, params, set }) => {
+      try {
+        const notification = new SaveNotification(this.businessRepository);
+        const { title } = body as { title: string };
+        const { business_id } = params as { business_id: string };
+        const inputNotification = {
+          title,
+          businessId: business_id
+        }
+        const { notificationId } = await notification.execute(inputNotification);
+        set.status = 201;
+        return {
+          notificationId,
+          message: 'Notificação salva!'
+        }
+      } catch (error: any) {
+        set.status = 500;
+        console.error(`Erro ao salvar notificacao: ${error.message}`);
+        return {
+          statusCode: 500,
+          message: error.message || 'Erro interno no servidor',
+          error: true
+        }
+      }
+    });
+  }
+
+  getNotifications() {
+    this.app.get('/business/notifications/:business_id', async ({ params, set }) => {
+      try {
+        const getNotifications = new GetNotifications(this.businessRepository);
+        const { business_id } = params as { business_id: string };
+        const notifications = await getNotifications.execute(business_id);
+        set.status = 200;
+        return notifications;
+
+      } catch (error: any) {
+        set.status = 500;
+        console.error(`Erro ao buscar notificacoes: ${error.message}`);
+        return {
+          statusCode: 500,
+          message: error.message || 'Erro interno no servidor',
+          error: true
+        }
+      }
+    });
+  }
+
 
 }
 

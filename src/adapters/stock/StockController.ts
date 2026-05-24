@@ -5,6 +5,7 @@ import { Update } from "../../domain/usecases/stock/Update";
 import { GetAll } from "../../domain/usecases/stock/GetAll";
 import { DatabaseConnection } from "../../infra/database/PgPromiseAdapter";
 import { Delete } from "../../domain/usecases/stock/Delete";
+import { Search } from "../../domain/usecases/stock/Search";
 
 class StockController {
 
@@ -69,11 +70,13 @@ class StockController {
         const {
           title,
           price,
-          quantity
+          quantity,
+          minimum_stock
         } = body as {
           title: string,
           price: number,
-          quantity: number
+          quantity: number,
+          minimum_stock: number
         };
         const updateStock = new Update(this.stockRepository);
         const createdAt = new Date();
@@ -82,6 +85,7 @@ class StockController {
           title,
           price,
           quantity,
+          minimumStock: minimum_stock,
           createdAt
         }
         const { productId } = await updateStock.execute(product_id, inputStock);
@@ -148,6 +152,28 @@ class StockController {
       } catch (error: any) {
         set.status = 500;
         console.log(`Erro ao deletar produto: ${error.message}`);
+        return {
+          statusCode: 500,
+          message: error.message || 'Erro interno no servidor',
+          error: true
+        }
+      }
+    });
+  }
+
+  search() {
+    this.app.get('/stock/search/:business_id', async ({ params, query, set }) => {
+      try {
+        const { business_id } = params as
+          { business_id: string };
+        const { title } = query as { title: string }
+        const search = new Search(this.stockRepository);
+        const stocks = await search.execute(business_id, title);
+        set.status = 200;
+        return stocks
+      } catch (error: any) {
+        set.status = 500;
+        console.log(`Erro ao realizar pesquisa: ${error.message}`);
         return {
           statusCode: 500,
           message: error.message || 'Erro interno no servidor',

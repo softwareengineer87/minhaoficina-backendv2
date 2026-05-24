@@ -10,6 +10,7 @@ class Update {
       input.title,
       input.price,
       input.quantity,
+      input.minimumStock,
       input.createdAt
     );
     return {
@@ -23,6 +24,7 @@ type Input = {
   title: string;
   price: number;
   quantity: number;
+  minimumStock: number;
   createdAt: Date
 }
 

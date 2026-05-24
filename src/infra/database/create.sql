@@ -67,4 +67,11 @@ CREATE TABLE IF NOT EXISTS logos (
   CONSTRAINT fk_business FOREIGN KEY(business_id) REFERENCES business(business_id)  
 );
 
+CREATE TABLE IF NOT EXISTS notifications (
+  notification_id TEXT PRIMARY KEY,
+  business_id TEXT,
+  title TEXT,
+  
+  CONSTRAINT fk_business FOREIGN KEY(business_id) REFERENCES business(business_id)  
+);
 
