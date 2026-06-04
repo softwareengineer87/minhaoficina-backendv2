@@ -42,6 +42,8 @@ businessController.getLogo();
 businessController.saveNotification();
 businessController.getNotifications();
 noteController.save();
+noteController.saveOs();
+noteController.getEntrancesOs(connection);
 stockController.save();
 stockController.update();
 stockController.getAll(connection);
