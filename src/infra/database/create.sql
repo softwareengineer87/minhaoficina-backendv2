@@ -1,6 +1,3 @@
-CREATE UNIQUE INDEX IF NOT EXISTS note_idx ON notes(note_id);
-CREATE UNIQUE INDEX IF NOT EXISTS entrance_idx ON entrances_os(os_id);
-CREATE UNIQUE INDEX IF NOT EXISTS stock_idx ON stocks(product_id);
 
 CREATE TABLE IF NOT EXISTS business (
   business_id TEXT PRIMARY KEY,
@@ -91,3 +88,6 @@ CREATE TABLE IF NOT EXISTS entrances_os (
   CONSTRAINT fk_business FOREIGN KEY(business_id) REFERENCES business(business_id)  
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS note_idx ON notes(note_id);
+CREATE UNIQUE INDEX IF NOT EXISTS entrance_idx ON entrances_os(os_id);
+CREATE UNIQUE INDEX IF NOT EXISTS stock_idx ON stocks(product_id);
